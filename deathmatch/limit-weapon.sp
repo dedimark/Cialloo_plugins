@@ -5,6 +5,10 @@
 
 #define VERSION "1.0.0"
 
+bool gb_IsValidBuyTime[MAXPLAYERS];     // when the player can call specific weapon menu
+
+int gi_KeyBuffer[MAXPLAYERS];  
+
 enum
 {
     ALERT,
@@ -47,6 +51,7 @@ public OnPluginStart()
     RegConsoleCmd("sm_awp", Cmd_GetAwp);
     RegConsoleCmd("sm_sg550", Cmd_GetSg550);
     RegConsoleCmd("sm_g3sg1", Cmd_GetG3sg1);
+    RegConsoleCmd("sm_limitedguns", Cmd_LimittedGuns);
 
     HookEvent("player_spawn", Event_PlaySpawn);     //place player in buy zone
 }
@@ -60,12 +65,24 @@ public OnClientPutInServer(client)
 public void Event_PlaySpawn(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(GetEventInt(event, "userid"));
-    SDKHook(client, SDKHook_PostThinkPost, Hook_PostThinkPost);
+    gb_IsValidBuyTime[client] = true;
+    CreateTimer(3.5, Timer_BuyTimeOver, client);
 }
 
-public Hook_PostThinkPost(entity)
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
-    SetEntProp(entity, Prop_Send, "m_bInBuyZone", 1);       // player in buyzone everywhere
+    if(IsPlayerAlive(client))
+    {
+        if((buttons & IN_DUCK) && !(gi_KeyBuffer[client] & IN_DUCK) && gb_IsValidBuyTime[client])
+        {
+            gi_KeyBuffer[client] = gi_KeyBuffer[client] | IN_DUCK;
+            ClientCommand(client, "sm_limitedguns");
+        }
+        else if(!(buttons & IN_DUCK) && gi_KeyBuffer[client] & IN_DUCK)
+        {
+            gi_KeyBuffer[client] = gi_KeyBuffer[client] & ~IN_DUCK;
+        }
+    }
 }
 
 public Action Timer_Annoncement(Handle timer, int client)
@@ -74,6 +91,38 @@ public Action Timer_Annoncement(Handle timer, int client)
         PrintToChat(client, "%s", ANNOUCEMENT);
 
     return Plugin_Handled;
+}
+
+public Action Timer_BuyTimeOver(Handle timer, int client)
+{
+    gb_IsValidBuyTime[client] = false;
+}
+
+public int Menu_LimittedWeaponMenu(Menu menu, MenuAction action, int param1, int param2)
+{
+    if(action == MenuAction_Select)
+    {
+        switch(param2)
+        {
+            case 0:
+                ClientCommand(param1, "sm_awp");
+            case 1:
+                ClientCommand(param2, "sm_sg550");
+            case 2:
+                ClientCommand(param1, "sm_g3sg1");
+        }
+    }
+}
+
+// Create menu
+public Action Cmd_LimittedGuns(int client, int args)
+{
+    Menu weaponmenu = new Menu(Menu_LimittedWeaponMenu);
+    weaponmenu.AddItem(STRING[2], STRING[2]);
+    weaponmenu.AddItem(STRING[3], STRING[3]);
+    weaponmenu.AddItem(STRING[4], STRING[4]);
+    weaponmenu.ExitButton = false;
+    weaponmenu.Display(client, 20);
 }
 
 public Action Cmd_GetAwp(int client, int args)
@@ -124,7 +173,7 @@ public Action Cmd_GetG3sg1(int client, int args)
                 AcceptEntityInput(slot, "Kill");
             }
 
-            GivePlayerItem(client, "weapon_awp");
+            GivePlayerItem(client, "weapon_g3sg1");
             SetEntProp(client, Prop_Send, "m_iAccount", clientCash - G3SG1PRICE);
         }
     } else {
@@ -153,7 +202,7 @@ public Action Cmd_GetSg550(int client, int args)
                 AcceptEntityInput(slot, "Kill");
             }
 
-            GivePlayerItem(client, "weapon_awp");
+            GivePlayerItem(client, "weapon_sg550");
             SetEntProp(client, Prop_Send, "m_iAccount", clientCash - SG550PRICE);
         }
     } else {
