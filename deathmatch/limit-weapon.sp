@@ -38,9 +38,9 @@ char STRING[][] =
 
 public Plugin myinfo =
 {
-    name = "limit specific weapon in deathmatch game mode",
+    name = "limit-weapon",
     author = "达达",
-    description = "limit-weapon",
+    description = "limit specific weapon in deathmatch game mode",
     version = VERSION,
     url = "https://www.cialloo.com"
 };

@@ -19,10 +19,10 @@ int g_iRGBA[MAXPLAYERS][4];
 
 public Plugin myinfo =
 {
-    name = "influx_speedhud",
-    author = "Cialloo",
-    description = "",
-    version = "1.1",
+    name = "surf-speed-hud",
+    author = "达达",
+    description = "show speed to client in surf",
+    version = "1.1.0",
     url = "https://www.cialloo.com"
 };
 
