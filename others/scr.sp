@@ -28,11 +28,11 @@
 #include <socket>
 #include <morecolors>
 
-#define CVAR_SERVER        0
-#define CVAR_IP        	1
-#define CVAR_PORT        2
-#define CVAR_TAG        3
-#define CVAR_RELAYSAY        4
+#define CVAR_SERVER		0
+#define CVAR_IP			1
+#define CVAR_PORT		2
+#define CVAR_TAG		3
+#define CVAR_RELAYSAY		4
 #define CVAR_ALLOWEDFILE	5
 #define CVAR_BLACKLISTFILE	6
 #define CVAR_O_ALIAS	7
@@ -40,9 +40,9 @@
 #define CVAR_TAG_COLOR	9
 #define CVAR_USER_COLOR	10
 #define CVAR_SPAM_DELAY	11
-#define CVAR_NUM_CVARS        12
+#define CVAR_NUM_CVARS		12
 
-#define VERSION        "0.6"
+#define VERSION		"0.6"
 
 enum Mod {
 	Mod_Unknown = 0,
@@ -68,69 +68,81 @@ public Plugin:myinfo = {
 	author = "Cheese",
 	description = "Enable multi-server chat",
 	version = VERSION,
-	url = "http://www.keksurf.com"
+	url = "https://forums.alliedmods.net/showthread.php?t=282985"
 };
 
 public OnPluginStart() {
 	g_cvars[CVAR_SERVER] = CreateConVar(
 	"sm_scr_server",
 	"0",
-	"When non-zero, this game server becomes the Server Chat Relay server");
+	"When non-zero, this game server becomes the Server Chat Relay server",
+	FCVAR_PLUGIN);
 
 	g_cvars[CVAR_IP] = CreateConVar(
 	"sm_scr_ip",
 	"127.0.0.1",
-	"IP of the Server Chat Relay server (ignored when sm_scr_server is 0)");
+	"IP of the Server Chat Relay server (ignored when sm_scr_server is 0)",
+	FCVAR_PLUGIN);
 
 	g_cvars[CVAR_PORT] = CreateConVar(
 	"sm_scr_port",
 	"51000",
-	"Port of the Server Chat Relay server");
+	"Port of the Server Chat Relay server",
+	FCVAR_PLUGIN);
 
 	g_cvars[CVAR_TAG] = CreateConVar(
 	"sm_scr_tag",
 	"Server 1",
-	"Tag to prefix messages broadcast from this server");
+	"Tag to prefix messages broadcast from this server",
+	FCVAR_PLUGIN);
 
 	g_cvars[CVAR_RELAYSAY] = CreateConVar(
 	"sm_scr_relaysay",
 	"0",
-	"When non-zero, broadcast all say messages from this server (except those that begin with '!')");
+	"When non-zero, broadcast all say messages from this server (except those that begin with '!')",
+	FCVAR_PLUGIN);
 
 	g_cvars[CVAR_ALLOWEDFILE] = CreateConVar(
 	"sm_scr_clients_file",
 	"scr_clients.txt",
-	"The text file containing a list of allowed client IPs");
+	"The text file containing a list of allowed client IPs",
+	FCVAR_PLUGIN);
 	
 	g_cvars[CVAR_BLACKLISTFILE] = CreateConVar(
 	"sm_scr_blacklist_file",
 	"scr_textblacklist.txt",
-	"The text file containing a list of text that will not be broadcast");
+	"The text file containing a list of text that will not be broadcast",
+	FCVAR_PLUGIN);
 	
 	g_cvars[CVAR_O_ALIAS] = CreateConVar(
 	"sm_scr_o_alias",
 	"sm_bc",
-	"Alias for the !o command, so it will use this for broadcast as well as !o on servers without sm_scr_relaysay 1");
+	"Alias for the !o command, so it will use this for broadcast as well as !o on servers without sm_scr_relaysay 1",
+	FCVAR_PLUGIN);
 	
 	g_cvars[CVAR_TEXT_COLOR] = CreateConVar(
 	"sm_scr_text_color",
 	"{default}",
-	"Color the text of the message sent to all servers. Please do not use this for communication between games as it may corrupt the text.");
+	"Color the text of the message sent to all servers. Please do not use this for communication between games as it may corrupt the text.",
+	FCVAR_PLUGIN);
 	
 	g_cvars[CVAR_TAG_COLOR] = CreateConVar(
 	"sm_scr_tag_color",
 	"{green}",
-	"Color the server tag of the message sent to all servers. Please do not use this for communication between games as it may corrupt the text.");
+	"Color the server tag of the message sent to all servers. Please do not use this for communication between games as it may corrupt the text.",
+	FCVAR_PLUGIN);
 	
 	g_cvars[CVAR_USER_COLOR] = CreateConVar(
 	"sm_scr_user_color",
 	"{blue}",
-	"Color the username of the message sent to all servers. Please do not use this for communication between games as it may corrupt the text.");
+	"Color the username of the message sent to all servers. Please do not use this for communication between games as it may corrupt the text.",
+	FCVAR_PLUGIN);
 	
 	g_cvars[CVAR_SPAM_DELAY] = CreateConVar(
 	"sm_scr_spam_delay",
 	"1",
-	"How many seconds to wait between users being able to send messages. E.x. sm_scr_spam_delay set to 2, if a user sends 2 messages within 2 seconds, only the first message will be relayed to all servers.");
+	"How many seconds to wait between users being able to send messages. E.x. sm_scr_spam_delay set to 2, if a user sends 2 messages within 2 seconds, only the first message will be relayed to all servers.",
+	FCVAR_PLUGIN);
 	
 	AutoExecConfig(true);
 	decl String:oalias[16];
@@ -176,25 +188,24 @@ public Action:Command_Broadcast(client, args) {
 	new bool:badtext = false;
 	new relaytime = GetConVarInt(g_cvars[CVAR_SPAM_DELAY]);
 	new currentTime = GetTime(); 
-	if (currentTime - LastUsed[client] < relaytime) {
-        return Plugin_Handled;
+    if (currentTime - LastUsed[client] < relaytime) {
+		return Plugin_Handled;
 	}
-	LastUsed[client] = GetTime(); 
+    LastUsed[client] = GetTime(); 
 	if (g_blacklistText != INVALID_HANDLE) {
 	new size = GetArraySize(g_blacklistText);
-        decl String:blacklistedText[16];
-        for (new i = 0; i < size && !badtext; i++) {
-        	GetArrayString(g_blacklistText, i, blacklistedText, sizeof(blacklistedText));
-        	if (StrContains(text, blacklistedText, false) != -1) {
-                badtext = true;
-        	}
-        }
+		decl String:blacklistedText[16];
+		for (new i = 0; i < size && !badtext; i++) {
+			GetArrayString(g_blacklistText, i, blacklistedText, sizeof(blacklistedText));
+			if (StrContains(text, blacklistedText, false) != -1) {
+				badtext = true;
+			}
+		}
 	}
 	if (text[0] && (
-        (text[0] != '\"' && text[0] != '!' && text[0] != '/')  ||
-        (text[0] == '\"' && text[1] && text[2] && text[3] && text[1] != '!' && text[1] != '/')) && sizeof(text) != 0 && !badtext) {
-        	ProcessText(client, text, sizeof(text));
-        	PrintToChat(client, "您刚成功发送一条全服消息\n");
+		(text[0] != '\"' && text[0] != '!' && text[0] != '/')  ||
+		(text[0] == '\"' && text[1] && text[2] && text[3] && text[1] != '!' && text[1] != '/')) && sizeof(text) != 0 && !badtext) {
+			ProcessText(client, text, sizeof(text));
 	}
 	return Plugin_Continue;
 }
@@ -202,28 +213,28 @@ public Action:Command_Broadcast(client, args) {
 public Action:Command_Say(client, args) {
 	if (GetConVarInt(g_cvars[CVAR_RELAYSAY])) {
 	decl String:text[256];
-        GetCmdArgString(text, sizeof(text));
+		GetCmdArgString(text, sizeof(text));
 	new bool:badtext = false;
 	if (g_blacklistText != INVALID_HANDLE) {
 	new size = GetArraySize(g_blacklistText);
-        decl String:blacklistedText[16];
-        for (new i = 0; i < size && !badtext; i++) {
-        	GetArrayString(g_blacklistText, i, blacklistedText, sizeof(blacklistedText));
-        	if (StrContains(text, blacklistedText, false) != -1) {
-                badtext = true;
-        	}
-        }
+		decl String:blacklistedText[16];
+		for (new i = 0; i < size && !badtext; i++) {
+			GetArrayString(g_blacklistText, i, blacklistedText, sizeof(blacklistedText));
+			if (StrContains(text, blacklistedText, false) != -1) {
+				badtext = true;
+			}
+		}
 	}
 	new relaytime = GetConVarInt(g_cvars[CVAR_SPAM_DELAY]);
 	new currentTime = GetTime(); 
-	if (currentTime - LastUsed[client] < relaytime) {
-        return Plugin_Handled;
+    if (currentTime - LastUsed[client] < relaytime) {
+		return Plugin_Handled;
 	}
-	LastUsed[client] = GetTime(); 
+    LastUsed[client] = GetTime(); 
 	if (text[0] && (
-        (text[0] != '\"' && text[0] != '!' && text[0] != '/')  ||
-        (text[0] == '\"' && text[1] && text[2] && text[3] && text[1] != '!' && text[1] != '/')) && sizeof(text) != 0 && !badtext) {
-        	ProcessText(client, text, sizeof(text));
+		(text[0] != '\"' && text[0] != '!' && text[0] != '/')  ||
+		(text[0] == '\"' && text[1] && text[2] && text[3] && text[1] != '!' && text[1] != '/')) && sizeof(text) != 0 && !badtext) {
+			ProcessText(client, text, sizeof(text));
 	}
 	}
 	return Plugin_Continue;
@@ -243,51 +254,51 @@ stock ProcessText(client, String:text[], text_length) {
 	new length = strlen(text);
 	text[length - 1] = 0;
 	if (textcolor[0]) {
-        	Format(text_colored, sizeof(text_colored), "%s%s", textcolor, text[1]);
-        }
-        if (usercolor[0]) {
-        	Format(clientcolored, sizeof(clientcolored), "%s%N", usercolor, client);
-        } else {
-        	Format(clientcolored, sizeof(clientcolored), "%N", client);
-        }
-        if (text_colored[0]) {
-        	if (clientcolored[0]) {
-                Format(text2, sizeof(text2), "%s: %s", clientcolored, text_colored);
-                
-        	} else {
-                Format(text2, sizeof(text2), "%s: %s", clientcolored, text_colored);
-        	}
-        } else {
-        	if (clientcolored[0]) {
-                Format(text2, sizeof(text2), "%s: %s", clientcolored, text[1]);
-        	} else {
-                Format(text2, sizeof(text2), "%s: %s", clientcolored, text[1]);
-        	}
-        }
+			Format(text_colored, sizeof(text_colored), "%s%s", textcolor, text[1]);
+		}
+		if (usercolor[0]) {
+			Format(clientcolored, sizeof(clientcolored), "%s%N", usercolor, client);
+		} else {
+			Format(clientcolored, sizeof(clientcolored), "%N", client);
+		}
+		if (text_colored[0]) {
+			if (clientcolored[0]) {
+				Format(text2, sizeof(text2), "%s: %s", clientcolored, text_colored);
+				
+			} else {
+				Format(text2, sizeof(text2), "%s: %s", clientcolored, text_colored);
+			}
+		} else {
+			if (clientcolored[0]) {
+				Format(text2, sizeof(text2), "%s: %s", clientcolored, text[1]);
+			} else {
+				Format(text2, sizeof(text2), "%s: %s", clientcolored, text[1]);
+			}
+		}
 	}
-	else {        
-        if (textcolor[0]) {
-        	Format(text_colored, sizeof(text_colored), "%s%s", textcolor, text);
-        }
-        if (usercolor[0]) {
-        	Format(clientcolored, sizeof(clientcolored), "%s%N", usercolor, client);
-        } else {
-        	Format(clientcolored, sizeof(clientcolored), "%N", client);
-        }
-        if (text_colored[0]) {
-        	if (clientcolored[0]) {
-                Format(text2, sizeof(text2), "%s: %s", clientcolored, text_colored);
-                
-        	} else {
-                Format(text2, sizeof(text2), "%s: %s", clientcolored, text_colored);
-        	}
-        } else {
-        	if (clientcolored[0]) {
-                Format(text2, sizeof(text2), "%s: %s", clientcolored, text);
-        	} else {
-                Format(text2, sizeof(text2), "%s: %s", clientcolored, text);
-        	}
-        }
+	else {		
+		if (textcolor[0]) {
+			Format(text_colored, sizeof(text_colored), "%s%s", textcolor, text);
+		}
+		if (usercolor[0]) {
+			Format(clientcolored, sizeof(clientcolored), "%s%N", usercolor, client);
+		} else {
+			Format(clientcolored, sizeof(clientcolored), "%N", client);
+		}
+		if (text_colored[0]) {
+			if (clientcolored[0]) {
+				Format(text2, sizeof(text2), "%s: %s", clientcolored, text_colored);
+				
+			} else {
+				Format(text2, sizeof(text2), "%s: %s", clientcolored, text_colored);
+			}
+		} else {
+			if (clientcolored[0]) {
+				Format(text2, sizeof(text2), "%s: %s", clientcolored, text);
+			} else {
+				Format(text2, sizeof(text2), "%s: %s", clientcolored, text);
+			}
+		}
 	}
 
 	InitiateBroadcast(text2);
@@ -314,8 +325,8 @@ stock RemoveClient(Handle:client) {
 	new size = GetArraySize(g_clients);
 	for (new i = 0; i < size; i++) {
 	if (Handle:GetArrayCell(g_clients, i) == client) {
-        RemoveFromArray(g_clients, i);
-        return;
+		RemoveFromArray(g_clients, i);
+		return;
 	}
 	}
 
@@ -326,49 +337,49 @@ public OnConfigsExecuted() {
 	decl String:fileName[32];
 	if (g_socket == INVALID_HANDLE) {
 	if (GetConVarInt(g_cvars[CVAR_SERVER])) {
-        decl String:ip[24];
-        new port = GetConVarInt(g_cvars[CVAR_PORT]);
+		decl String:ip[24];
+		new port = GetConVarInt(g_cvars[CVAR_PORT]);
 
-        GetServerIP(ip, sizeof(ip));
-        g_socket = SocketCreate(SOCKET_TCP, OnSocketError);
-        SocketBind(g_socket, ip, port);
-        SocketListen(g_socket, OnSocketIncoming);
+		GetServerIP(ip, sizeof(ip));
+		g_socket = SocketCreate(SOCKET_TCP, OnSocketError);
+		SocketBind(g_socket, ip, port);
+		SocketListen(g_socket, OnSocketIncoming);
 
-        g_clients = CreateArray();
-        g_server = true;
+		g_clients = CreateArray();
+		g_server = true;
 
-        LogMessage("Started Server Chat Relay server on port %d", port);
+		LogMessage("Started Server Chat Relay server on port %d", port);
 
-        
-        GetConVarString(g_cvars[CVAR_ALLOWEDFILE], fileName, sizeof(fileName));
-        new Handle:fh = OpenFile(fileName, "r");
-        if (fh == INVALID_HANDLE) {
-        LogMessage("Could not open \"%s\". Allowing any client to connect.", fileName);
-        }
-        else {
-        decl String:line[16];
-        g_allowedServers = CreateArray(16);
-        while (ReadFileLine(fh, line, sizeof(line))) {
-        	TrimString(line);
-        	if (strlen(line)) {
-        	PushArrayString(g_allowedServers, line);
-        	PrintToServer("%d: %s", GetArraySize(g_allowedServers), line);
-        	}
-        }
-        CloseHandle(fh);
-        LogMessage("Read %d entries in \"%s\"", GetArraySize(g_allowedServers), fileName);
-        }
+		
+		GetConVarString(g_cvars[CVAR_ALLOWEDFILE], fileName, sizeof(fileName));
+		new Handle:fh = OpenFile(fileName, "r");
+		if (fh == INVALID_HANDLE) {
+		LogMessage("Could not open \"%s\". Allowing any client to connect.", fileName);
+		}
+		else {
+		decl String:line[16];
+		g_allowedServers = CreateArray(16);
+		while (ReadFileLine(fh, line, sizeof(line))) {
+			TrimString(line);
+			if (strlen(line)) {
+			PushArrayString(g_allowedServers, line);
+			PrintToServer("%d: %s", GetArraySize(g_allowedServers), line);
+			}
+		}
+		CloseHandle(fh);
+		LogMessage("Read %d entries in \"%s\"", GetArraySize(g_allowedServers), fileName);
+		}
 	}
 	else {
-        decl String:ip[24];
-        new port = GetConVarInt(g_cvars[CVAR_PORT]);
-        GetConVarString(g_cvars[CVAR_IP], ip, sizeof(ip));
+		decl String:ip[24];
+		new port = GetConVarInt(g_cvars[CVAR_PORT]);
+		GetConVarString(g_cvars[CVAR_IP], ip, sizeof(ip));
 
-        g_socket = SocketCreate(SOCKET_TCP, OnSocketError);
-        SocketConnect(g_socket, OnSocketConnected, OnSocketReceive, OnSocketDisconnected, ip, port);
-        g_server = false;
+		g_socket = SocketCreate(SOCKET_TCP, OnSocketError);
+		SocketConnect(g_socket, OnSocketConnected, OnSocketReceive, OnSocketDisconnected, ip, port);
+		g_server = false;
 
-        LogMessage("Connected to Server Chat Relay server on %s:%d", ip, port);
+		LogMessage("Connected to Server Chat Relay server on %s:%d", ip, port);
 	}
 	GetConVarString(g_cvars[CVAR_BLACKLISTFILE], fileName, sizeof(fileName));
 	new Handle:fh2 = OpenFile(fileName, "r");
@@ -379,11 +390,11 @@ public OnConfigsExecuted() {
 	decl String:line[16];
 	g_blacklistText = CreateArray(16);
 	while (ReadFileLine(fh2, line, sizeof(line))) {
-        TrimString(line);
-        if (strlen(line)) {
-        PushArrayString(g_blacklistText, line);
-        PrintToServer("%d: %s", GetArraySize(g_blacklistText), line);
-        }
+		TrimString(line);
+		if (strlen(line)) {
+		PushArrayString(g_blacklistText, line);
+		PrintToServer("%d: %s", GetArraySize(g_blacklistText), line);
+		}
 	}
 	CloseHandle(fh2);
 	LogMessage("Read %d entries in \"%s\"", GetArraySize(g_blacklistText), fileName);
@@ -403,7 +414,7 @@ stock InitiateBroadcast(const String:message[]) {
 	GetConVarString(g_cvars[CVAR_TAG], tag, sizeof(tag));
 	GetConVarString(g_cvars[CVAR_TAG_COLOR], tagcolor, sizeof(tagcolor));
 	if (tagcolor[0]) {
-        Format(tag, sizeof(tag), "%s %s", tagcolor, tag);
+		Format(tag, sizeof(tag), "%s %s", tagcolor, tag);
 	}
 	Format(message_tagged, sizeof(message_tagged), "%s | %s", tag, message);
 
@@ -436,7 +447,7 @@ stock Broadcast(Handle:socket, const String:message[]) {
 	for (new i = 0; i < size; i++) {
 	dest_socket = Handle:GetArrayCell(g_clients, i);
 	if (dest_socket != socket) {
-        SocketSend(dest_socket, message);
+		SocketSend(dest_socket, message);
 	}
 	}
 
@@ -450,7 +461,7 @@ stock PrintChatColored(const String:text[]) {
 	PrintToChatAll("\x04%s", text);
 	}
 	else {
-        PrintToChatAll("\x01\x04%s", text);
+		PrintToChatAll("\x01\x04%s", text);
 	}
 }
 
@@ -471,13 +482,13 @@ public OnSocketIncoming(Handle:socket, Handle:newSocket, String:remoteIP[], remo
 	new bool:found = false;
 	if (g_allowedServers != INVALID_HANDLE) {
 	new size = GetArraySize(g_allowedServers);
-        decl String:allowedServer[16];
-        for (new i = 0; i < size && !found; i++) {
-        	GetArrayString(g_allowedServers, i, allowedServer, sizeof(allowedServer));
-        	if (StrEqual(remoteIP, allowedServer)) {
-                found = true;
-        	}
-        }
+		decl String:allowedServer[16];
+		for (new i = 0; i < size && !found; i++) {
+			GetArrayString(g_allowedServers, i, allowedServer, sizeof(allowedServer));
+			if (StrEqual(remoteIP, allowedServer)) {
+				found = true;
+			}
+		}
 	}
 	if (StrEqual(remoteIP,"")){
 	found = true;
