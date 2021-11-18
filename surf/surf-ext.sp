@@ -7,9 +7,13 @@ int gI_PlayerExtChance[MAXPLAYERS + 1];
 
 bool gB_PlayerReturn[MAXPLAYERS + 1];
 
+char gC_LogPath[PLATFORM_MAX_PATH];
+
 public OnPluginStart()
 {
     RegConsoleCmd("sm_ext", Cmd_Ext);
+
+    BuildPath(Path_SM, gC_LogPath, sizeof(gC_LogPath), "logs/surf-ext-log.txt");
 }
 
 public OnMapStart()
@@ -35,6 +39,10 @@ public Action Cmd_Ext(int client, int args)
     {
         gI_PlayerExtChance[client]--;
         ExtendMapTimeLimit(EXTENDTIME);
+
+        char steamid[64];
+        GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
+        LogToFile(gC_LogPath, "%N (steamid: %s) want to extend map", client, steamid);
     }
     else
     {
