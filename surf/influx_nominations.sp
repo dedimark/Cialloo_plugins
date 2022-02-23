@@ -504,7 +504,7 @@ public void DB_OnFetchMapList(Handle owner, Handle hndl, const char[] error, any
     {
         int tier = SQL_FetchInt(hndl, 0);
         SQL_FetchString(hndl, 1, map, sizeof(map));
-        FormatEx(buffer, sizeof(buffer), "[%d]%s", tier, map);
+        FormatEx(buffer, sizeof(buffer), "[T%d]%s", tier, map);
         g_MapList.PushString(buffer);
     }
 
