@@ -10,12 +10,13 @@ public Plugin myinfo =
     name = "influx_maptier",
     author = PLUGIN_AUTHOR,
     description = "show map tier to surf player",
-    version = "0.1.0",
+    version = "0.2.0",
     url = PLUGIN_URL
 };
 
 public void OnPluginStart()
 {
+    RegConsoleCmd("sm_settier", Cmd_Settier, "set tier to map");
     HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
@@ -43,6 +44,43 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 
     SetHudTextParams(-1.0, 0.1, 6.5, 255, 255, 0, 200);
     ShowHudText(GetClientOfUserId(event.GetInt("userid")), -1, "当前地图难度: T%d", gI_Maptier);
+}
+
+public Action Cmd_Settier(int client, int args)
+{
+    char buffer[8], mapname[128], query[256];
+    GetCmdArg(1, buffer, sizeof(buffer));
+    
+    int tier = StringToInt(buffer);
+    
+    if(tier < 0 || tier > 8)
+    {
+        PrintToChat(client, "Invalid tier");
+        return Plugin_Handled;
+    }
+
+    GetCurrentMap(mapname, sizeof(mapname));
+    FormatEx(query, sizeof(query), 
+    "UPDATE `inf_maps` \
+    SET `maptier` = %d \
+    WHERE `inf_maps`.`mapname` = \'%s\';",
+    tier, 
+    mapname);
+    SQL_TQuery(Influx_GetDB(), DB_OnSetMaptier, query, client);
+
+    return Plugin_Handled;
+}
+
+public void DB_OnSetMaptier(Handle owner, Handle hndl, const char[] error, int client)
+{
+    if(hndl == null)
+    {
+        PrintToChat(client, "Set map tier fail.\nError: %s", error);
+    }
+    else 
+    {
+        PrintToChat(client, "Successfully set map tier.");
+    }
 }
 
 public void DB_OnGetMapTier(Handle owner, Handle hndl, const char[] error, any data)
