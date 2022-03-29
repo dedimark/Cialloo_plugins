@@ -28,9 +28,9 @@ public void OnConfigsExecuted()
     }
 
     char mapname[128], hostname[256];
+    GetCurrentMap(mapname, sizeof(mapname));
     int tier = Shavit_GetMapTier(mapname);
 
-    GetCurrentMap(mapname, sizeof(mapname));
     FormatEx(hostname, sizeof(hostname), "%s Current: *T%d*", g_sHostname, tier);
     SetConVarString(g_hHostname, hostname);
 }
