@@ -1,5 +1,5 @@
 #include <sourcemod>
-#include <Cialloo/Cialloo_core>
+#include <cialloo/core>
 #include <influx/core>
 
 int gI_Maptier = 0;
@@ -10,13 +10,13 @@ public Plugin myinfo =
     name = "influx_maptier",
     author = PLUGIN_AUTHOR,
     description = "show map tier to surf player",
-    version = "0.2.0",
+    version = "0.2.1",
     url = PLUGIN_URL
 };
 
 public void OnPluginStart()
 {
-    RegConsoleCmd("sm_settier", Cmd_Settier, "set tier to map");
+    RegAdminCmd("sm_settier", Cmd_Settier, ADMFLAG_CHANGEMAP, "set tier to map");
     HookEvent("player_spawn", Event_PlayerSpawn);
 }
 

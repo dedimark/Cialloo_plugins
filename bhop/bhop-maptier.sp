@@ -1,8 +1,8 @@
-#include <Cialloo/Cialloo_core>
+#include <cialloo/core>
 #include <sourcemod>
 #include <shavit>
 
-#define VERSION "0.1.0"
+#define VERSION "0.1.1"
 
 bool g_bLoadName = false;
 char g_sHostname[128];
