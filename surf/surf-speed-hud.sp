@@ -137,7 +137,7 @@ public Action Command_SpeedX(int client, int args)
     if(i != 1)
     {
         ReplyToCommand(client, "请输入一个0.0到1.0的小数(-1.0表示中间值)");
-        return;
+        return Plugin_Handled;
     }
     
     char Xbuffer[8];
@@ -148,7 +148,7 @@ public Action Command_SpeedX(int client, int args)
     if((fX > 1.0 || fX < 0.0) && fX != -1.0)
     {
         ReplyToCommand(client, "请输入一个0.0到1.0的小数(-1.0表示中间值)");
-        return;
+        return Plugin_Handled;
     }
 
     char strCookie[128], strPieces[7][16];
@@ -158,6 +158,8 @@ public Action Command_SpeedX(int client, int args)
     FormatEx(strPieces[1], 16, "%f", fX);
     FormatEx(strCookie, 128, "%s,%s,%s,%s,%s,%s,%s", strPieces[0], strPieces[1], strPieces[2], strPieces[3], strPieces[4], strPieces[5], strPieces[6]);
     SetClientCookie(client, g_hClientpref, strCookie);
+
+    return Plugin_Handled;
 }
 
 public Action Command_SpeedY(int client, int args)
@@ -166,7 +168,7 @@ public Action Command_SpeedY(int client, int args)
     if(i != 1)
     {
         ReplyToCommand(client, "请输入一个0.0到1.0的小数(-1.0表示中间值)");
-        return;
+        return Plugin_Handled;
     }
     
     char Ybuffer[8];
@@ -177,7 +179,7 @@ public Action Command_SpeedY(int client, int args)
     if((fY > 1.0 || fY < 0.0) && fY != -1.0)
     {
         ReplyToCommand(client, "请输入一个0.0到1.0的小数(-1.0表示中间值)");
-        return;
+        return Plugin_Handled;
     }
 
     char strCookie[128], strPieces[7][16];
@@ -187,6 +189,8 @@ public Action Command_SpeedY(int client, int args)
     FormatEx(strPieces[2], 16, "%f", fY);
     FormatEx(strCookie, 128, "%s,%s,%s,%s,%s,%s,%s", strPieces[0], strPieces[1], strPieces[2], strPieces[3], strPieces[4], strPieces[5], strPieces[6]);
     SetClientCookie(client, g_hClientpref, strCookie);
+
+    return Plugin_Handled
 }
 
 public Action Command_SpeedR(int client, int args)
@@ -195,7 +199,7 @@ public Action Command_SpeedR(int client, int args)
     if(i != 1)
     {
         ReplyToCommand(client, "请输入一个0到255的整数");
-        return;
+        return Plugin_Handled;
     }
     
     char Rbuffer[8];
@@ -206,7 +210,7 @@ public Action Command_SpeedR(int client, int args)
     if(iR > 255 || iR < 0)
     {
         ReplyToCommand(client, "请输入一个0到255的整数");
-        return;
+        return Plugin_Handled;
     }
 
     char strCookie[128], strPieces[7][16];
@@ -216,6 +220,8 @@ public Action Command_SpeedR(int client, int args)
     FormatEx(strPieces[3], 16, "%d", iR);
     FormatEx(strCookie, 128, "%s,%s,%s,%s,%s,%s,%s", strPieces[0], strPieces[1], strPieces[2], strPieces[3], strPieces[4], strPieces[5], strPieces[6]);
     SetClientCookie(client, g_hClientpref, strCookie);
+
+    return Plugin_Handled
 }
 
 public Action Command_SpeedG(int client, int args)
@@ -224,7 +230,7 @@ public Action Command_SpeedG(int client, int args)
     if(i != 1)
     {
         ReplyToCommand(client, "请输入一个0到255的整数");
-        return;
+        return Plugin_Handled;
     }
     
     char Gbuffer[8];
@@ -235,7 +241,7 @@ public Action Command_SpeedG(int client, int args)
     if(iG > 255 || iG < 0)
     {
         ReplyToCommand(client, "请输入一个0到255的整数");
-        return;
+        return Plugin_Handled;
     }
 
     char strCookie[128], strPieces[7][16];
@@ -245,6 +251,8 @@ public Action Command_SpeedG(int client, int args)
     FormatEx(strPieces[4], 16, "%d", iG);
     FormatEx(strCookie, 128, "%s,%s,%s,%s,%s,%s,%s", strPieces[0], strPieces[1], strPieces[2], strPieces[3], strPieces[4], strPieces[5], strPieces[6]);
     SetClientCookie(client, g_hClientpref, strCookie);
+
+    return Plugin_Handled
 }
 
 public Action Command_SpeedB(int client, int args)
@@ -253,7 +261,7 @@ public Action Command_SpeedB(int client, int args)
     if(i != 1)
     {
         ReplyToCommand(client, "请输入一个0到255的整数");
-        return;
+        return Plugin_Handled;
     }
     
     char Bbuffer[8];
@@ -264,7 +272,7 @@ public Action Command_SpeedB(int client, int args)
     if(iB > 255 || iB < 0)
     {
         ReplyToCommand(client, "请输入一个0到255的整数");
-        return;
+        return Plugin_Handled;
     }
 
     char strCookie[128], strPieces[7][16];
@@ -274,6 +282,8 @@ public Action Command_SpeedB(int client, int args)
     FormatEx(strPieces[5], 16, "%d", iB);
     FormatEx(strCookie, 128, "%s,%s,%s,%s,%s,%s,%s", strPieces[0], strPieces[1], strPieces[2], strPieces[3], strPieces[4], strPieces[5], strPieces[6]);
     SetClientCookie(client, g_hClientpref, strCookie);
+
+    return Plugin_Handled
 }
 
 public Action Command_SpeedA(int client, int args)
@@ -282,7 +292,7 @@ public Action Command_SpeedA(int client, int args)
     if(i != 1)
     {
         ReplyToCommand(client, "请输入一个0到255的整数");
-        return;
+        return Plugin_Handled;
     }
     
     char Abuffer[8];
@@ -293,7 +303,7 @@ public Action Command_SpeedA(int client, int args)
     if(iA > 255 || iA < 0)
     {
         ReplyToCommand(client, "请输入一个0到255的整数");
-        return;
+        return Plugin_Handled;
     }
 
     char strCookie[128], strPieces[7][16];
@@ -303,6 +313,8 @@ public Action Command_SpeedA(int client, int args)
     FormatEx(strPieces[6], 16, "%d", iA);
     FormatEx(strCookie, 128, "%s,%s,%s,%s,%s,%s,%s", strPieces[0], strPieces[1], strPieces[2], strPieces[3], strPieces[4], strPieces[5], strPieces[6]);
     SetClientCookie(client, g_hClientpref, strCookie);
+
+    return Plugin_Handled
 }
 
 public Action Timer_ShowHudSpeed(Handle timer, int client)
