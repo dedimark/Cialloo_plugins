@@ -27,7 +27,8 @@ public void OnClientPutInServer(int client)
 public Action Timer_SendAdvertisement(Handle Timer, int client)
 {
     if(client 
-    && IsClientConnected(client) 
+    && IsClientConnected(client)
+    && IsClientInGame(client) 
     && !IsFakeClient(client) 
     && !IsClientSourceTV(client)
     && !IsClientReplay(client))
