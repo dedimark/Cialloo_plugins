@@ -32,7 +32,7 @@ public void OnConfigsExecuted()
     ConVar index = FindConVar("cialloo_anti_same_map_server_index");
     index.GetString(buffer, sizeof(buffer));
 
-    if(g_check)
+    if(g_check || strcmp(g_previous_map, mapname) == 0)
     {
         kv.Rewind();
         kv.SetString(buffer, mapname);
