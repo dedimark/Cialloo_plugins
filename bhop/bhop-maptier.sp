@@ -41,7 +41,7 @@ public void OnConfigsExecuted()
     SetConVarString(g_hHostname, hostname);
 }
 
-public void Shavit_OnWorldRecord(int client, int style, float time, int jumps, int strafes, float sync, int track, float oldwr, float oldtime, float perfs, float avgvel, float maxvel, int timestamp)
+public void Shavit_OnFinish(int client, int style, float time, int jumps, int strafes, float sync, int track, float oldtime, float perfs, float avgvel, float maxvel, int timestamp)
 {
     if(g_bGiveCredits)
         return;
