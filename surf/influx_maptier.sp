@@ -1,5 +1,4 @@
 #include <sourcemod>
-#include <cialloo/core>
 #include <influx/core>
 #include <store>
 
@@ -10,10 +9,10 @@ bool gB_GiveCredits = false;
 public Plugin myinfo =
 {
     name = "influx_maptier",
-    author = PLUGIN_AUTHOR,
+    author = "cialloo",
     description = "show map tier to surf player",
     version = "0.2.1",
-    url = PLUGIN_URL
+    url = "www.cialloo.com"
 };
 
 public void OnPluginStart()

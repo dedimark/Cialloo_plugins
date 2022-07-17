@@ -1,4 +1,3 @@
-#include <cialloo/core>
 #include <sourcemod>
 #include <shavit>
 #include <store>
@@ -13,10 +12,10 @@ Handle g_hHostname = null;
 public Plugin myinfo =
 {
     name = "bhop-maptier",
-    author = PLUGIN_AUTHOR,
+    author = "cialloo",
     description = "Show map tier on hostname",
     version = VERSION,
-    url = PLUGIN_URL
+    url = "www.cialloo.com"
 };
 
 public void OnMapEnd()
