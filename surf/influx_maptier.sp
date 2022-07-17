@@ -1,9 +1,11 @@
 #include <sourcemod>
 #include <cialloo/core>
 #include <influx/core>
+#include <store>
 
 int gI_Maptier = 0;
 bool gB_TierReady = false;
+bool gB_GiveCredits = false;
 
 public Plugin myinfo =
 {
@@ -32,9 +34,31 @@ public void OnMapStart()
     SQL_TQuery(Influx_GetDB(), DB_OnGetMapTier, query, 0, DBPrio_Normal);
 }
 
+public void Influx_OnTimerFinishPost( int client, int runid, int mode, int style, float time, float prev_pb, float prev_best, int flags )
+{
+    if(!gB_GiveCredits)
+        gB_GiveCredits = true;
+    else
+        return;
+
+    switch(gI_Maptier)
+    {
+        case 0: return;
+        case 1: Store_GiveCredits(client, 5);
+        case 2: Store_GiveCredits(client, 10);
+        case 3: Store_GiveCredits(client, 25);
+        case 4: Store_GiveCredits(client, 40);
+        case 5: Store_GiveCredits(client, 80);
+        case 6: Store_GiveCredits(client, 160);
+        case 7: Store_GiveCredits(client, 320);
+        case 8: Store_GiveCredits(client, 1000);
+    }
+}
+
 public void OnMapEnd()
 {
     gB_TierReady = false;
+    gB_GiveCredits = false;
 }
 
 public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
@@ -103,4 +127,9 @@ public Action Timer_SetHostname(Handle timer)
     GetConVarString(cv_hostname, hostname, sizeof(hostname));
     FormatEx(buffer, sizeof(hostname), "%s Current: *T%d*", hostname, gI_Maptier);
     SetConVarString(cv_hostname, buffer);
+}
+
+stock void Store_GiveCredits(int client, int credits)
+{
+    Store_SetClientCredits(client, Store_GetClientCredits(client) + credits);
 }

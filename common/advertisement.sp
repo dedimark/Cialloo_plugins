@@ -21,7 +21,7 @@ public void OnPluginStart()
 public void OnClientPutInServer(int client)
 {
     if(g_timer[client] == INVALID_HANDLE)
-        g_timer[client] = CreateTimer(45.0, Timer_SendAdvertisement, client);
+        g_timer[client] = CreateTimer(27.0, Timer_SendAdvertisement, client);
 }
 
 public Action Timer_SendAdvertisement(Handle Timer, int client)
@@ -32,7 +32,7 @@ public Action Timer_SendAdvertisement(Handle Timer, int client)
     && !IsFakeClient(client) 
     && !IsClientSourceTV(client)
     && !IsClientReplay(client))
-        CPrintToChat(client, "{green}Visit our website: {blue}https://cs.cialloo.com\n");
+        CPrintToChat(client, "{green}Visit our website: {blue}https://cs.cialloo.com\n{white}输入!menu可以查看所有服务器信息包括指令.");
 
     g_timer[client] = INVALID_HANDLE;
 }
