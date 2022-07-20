@@ -9,30 +9,22 @@ public void OnPluginStart()
 
 public Action Cmd_QQOwner(int client, int args)
 {
-    char steamid[32], host[MAX_NAME_LENGTH], message[256], qqmsg[512];
-    ConVar hostname = FindConVar("hostname");
-    hostname.GetString(host, sizeof(host));
+    char steamid[32], message[256], qqmsg[512];
     GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
     GetCmdArgString(message, sizeof(message));
-    FormatEx(qqmsg, sizeof(qqmsg), 
-    "来自玩家 %N 的消息: %s\n\
-    SteamID: %s\n\
-    服务器: %s", client, message, steamid, host)
+    FormatEx(qqmsg, sizeof(qqmsg), "%N: %s", client, message);
     MessageToQQFriend("2376157715", qqmsg);
+    LogMessage("%N send a group message: %s\nSteamID: %s", client, message, steamid);
     return Plugin_Handled;
 }
 
 public Action Cmd_QQGMsg(int client, int args)
 {
-    char steamid[32], host[MAX_NAME_LENGTH], message[256], qqmsg[512];
-    ConVar hostname = FindConVar("hostname");
-    hostname.GetString(host, sizeof(host));
+    char steamid[32], message[256], qqmsg[512];
     GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
     GetCmdArgString(message, sizeof(message));
-    FormatEx(qqmsg, sizeof(qqmsg), 
-    "来自玩家 %N 的消息: %s\n\
-    SteamID: %s\n\
-    服务器: %s", client, message, steamid, host)
+    FormatEx(qqmsg, sizeof(qqmsg), "%N: %s", client, message);
     MessageToQQGroup("285620437", qqmsg);
+    LogMessage("%N send a group message: %s\nSteamID: %s", client, message, steamid);
     return Plugin_Handled;
 }
