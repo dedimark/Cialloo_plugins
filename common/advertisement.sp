@@ -32,7 +32,7 @@ public Action Timer_SendAdvertisement(Handle Timer, int client)
     && !IsFakeClient(client) 
     && !IsClientSourceTV(client)
     && !IsClientReplay(client))
-        CPrintToChat(client, "{green}Visit our website: {blue}https://cs.cialloo.com\n{white}输入!menu可以查看所有服务器信息包括指令.\n{red}默认不提供下载模型资源, 如需预览模型请先至资源下载服!!");
+        CPrintToChat(client, "{green}Visit our website: {blue}https://cialloo.com\n{white}输入!menu可以查看所有服务器信息包括指令.\n{red}默认不提供下载模型资源, 如需预览模型请先至资源下载服!!");
 
     g_timer[client] = INVALID_HANDLE;
 }
